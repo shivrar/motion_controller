@@ -29,20 +29,28 @@ ament_target_dependencies(RobotBaseModel Eigen3)
 target_include_directories(RobotBaseModel PUBLIC ${EIGEN3_INCLUDE_DIRS})
 
 
+add_executable(model_example src/main.cpp)
+target_link_libraries(model_example RobotBaseModel)
+
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(RobotBaseModel PRIVATE "MOTION_CONTROLLER_BUILDING_LIBRARY")
 
 install(
   DIRECTORY include
-  DESTINATION include
+  DESTINATION include/${PROJECT_NAME}
 )
 install(
   TARGETS RobotBaseModel
   EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib/${PROJECT_NAME}
   RUNTIME DESTINATION bin
+)
+
+install(TARGETS
+        model_example
+        DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
@@ -66,8 +74,5 @@ ament_export_libraries(
 ament_export_targets(
   export_${PROJECT_NAME}
 )
-
-add_executable(model_example src/main.cpp)
-target_link_libraries(model_example RobotBaseModel)
 
 ament_package()
