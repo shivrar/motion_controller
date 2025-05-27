@@ -19,7 +19,7 @@ namespace motion_controller {
       return this->derived().actuatorsToRobotTwistImpl(actuators);
     }
 
-  protected:
+  private:
     RobotKinematicsBase() = default;
     friend Derived;
   };
