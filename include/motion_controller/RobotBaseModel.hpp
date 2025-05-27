@@ -24,4 +24,28 @@ namespace motion_controller {
     friend Derived;
   };
 
+
+  template <class Derived, class... Args>
+class RobotDynamicsBase : public CRTP<RobotDynamicsBase, Derived, Args...> {
+public:
+    using Twist     = Eigen::Matrix<double, 6, 1>;     // [vx, vy, vz, wx, wy, wz]
+    using Actuators = Eigen::VectorXd;                 // Actuator inputs (forces/torques)
+    using State     = Eigen::VectorXd;                 // Full robot state: [position, orientation, velocity, ...]
+    using Accel     = Eigen::Matrix<double, 6, 1>;     // [ax, ay, az, alphax, alphay, alphaz]
+
+    // Map actuator inputs to generalized accelerations (robot frame)
+    Accel actuatorsToAcceleration(const State& state, const Actuators& actuators) const {
+        return this->derived().actuatorsToAccelerationImpl(state, actuators);
+    }
+
+    // Optionally: advance the full state (using, e.g., Euler integration)
+    State integrateDynamics(const State& state, const Actuators& actuators, double dt) const {
+        return this->derived().integrateDynamicsImpl(state, actuators, dt);
+    }
+
+protected:
+    RobotDynamicsBase() = default;
+    friend Derived;
+};
+
 } // namespace motion_controller
